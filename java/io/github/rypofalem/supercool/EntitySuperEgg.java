@@ -1,24 +1,19 @@
 package io.github.rypofalem.supercool;
 
-import java.util.Random;
 
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
-import net.minecraft.client.renderer.texture.IIconRegister;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.projectile.EntityThrowable;
-import net.minecraft.util.MathHelper;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.world.Explosion;
 import net.minecraft.world.World;
 
 public class EntitySuperEgg extends EntityThrowable {
 	
-	private float explosionSize = 1.5F; 
-	private float explosionDamage = 25.0F;
-	private float explosionDamageSize = 8.0F;
+	public float explosionSize = 1.5F; 
+	public float explosionDamage = 25.0F;
+	public float explosionDamageSize = 8.0F;
 	private int ticks =0;
+	public boolean isClientDead=false;
 
 	  public EntitySuperEgg(World world)
 	    {
@@ -38,10 +33,9 @@ public class EntitySuperEgg extends EntityThrowable {
 	    @Override
 	    protected void onImpact(MovingObjectPosition pos){
 	    	explode();
-	        this.setDead();
 	    }
 	    
-	    private void explode(){
+	    public void explode(){
 	    	double x = this.posX;
 	    	double y = this.posY;
 	    	double z = this.posZ;
@@ -52,15 +46,30 @@ public class EntitySuperEgg extends EntityThrowable {
 	        	explosion.doExplosionA();
 	        }
 	        explosion.doExplosionB(true);
+	        this.setDead();
 	    }
+	    
+	    public void vanillaExplode(){
+	    	double x = this.posX;
+	    	double y = this.posY;
+	    	double z = this.posZ;
+	        Explosion explosion = new Explosion(this.worldObj, this, x, y, z, explosionSize);
+	        explosion.isFlaming = false;
+	        explosion.isSmoking = true;
+	        if(!this.worldObj.isRemote){
+	        	explosion.doExplosionA();
+	        }
+	        explosion.doExplosionB(true);
+	        this.setDead();
+	    }
+	    
 	    
 	    @Override
 	    public void onUpdate(){
+	    	super.onUpdate();
 	    	if(++ticks > 100){
 	    		explode();
-	    		this.setDead();
 	    	}
-	    	super.onUpdate();
 	    }
 	    
 	    @Override

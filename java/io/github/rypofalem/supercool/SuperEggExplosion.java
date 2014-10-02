@@ -29,7 +29,6 @@ public class SuperEggExplosion extends Explosion {
     /** A list of ChunkPositions of blocks affected by this explosion */
     public List affectedBlockPositions = new ArrayList();
     private Map field_77288_k = new HashMap();
-    private static final String __OBFID = "CL_00000134";
     
     private int field_77289_h = 16;
     private Random explosionRNG = new Random();
@@ -156,7 +155,10 @@ public class SuperEggExplosion extends Explosion {
     public void doExplosionB(boolean p_77279_1_)
     {
         this.worldObj.playSoundEffect(this.explosionX, this.explosionY, this.explosionZ, "random.explode", 4.0F, (1.0F + (this.worldObj.rand.nextFloat() - this.worldObj.rand.nextFloat()) * 0.2F) * 0.7F);
-
+        String side = "worldobj is null";
+        if(worldObj != null)
+         side = worldObj.isRemote ? "Client": "Server";
+        System.out.println("explosionB at " + explosionX + " "+ explosionY+ " "+explosionZ + " on " + side);
         if (this.explosionSize >= 2.0F && this.isSmoking)
         {
             this.worldObj.spawnParticle("hugeexplosion", this.explosionX, this.explosionY, this.explosionZ, 1.0D, 0.0D, 0.0D);
@@ -237,6 +239,6 @@ public class SuperEggExplosion extends Explosion {
                 }
             }
         }
-    }
+   }
 
 }

@@ -18,5 +18,4 @@ public class CreativeTabsSuperCool extends CreativeTabs {
 	public Item getTabIconItem() {
 		return Item.getItemFromBlock(Blocks.dirt);
 	}
-
 }

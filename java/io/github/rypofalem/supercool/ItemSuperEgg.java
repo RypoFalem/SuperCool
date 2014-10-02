@@ -1,5 +1,7 @@
 package io.github.rypofalem.supercool;
 
+
+
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.util.IIcon;
@@ -13,5 +15,4 @@ public class ItemSuperEgg extends Item {
 		this.setCreativeTab(SuperCool.tabSuperCool);
 		setMaxStackSize(64);
 	}
-
 }
