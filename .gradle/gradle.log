@@ -12,7 +12,7 @@ The assetDir is deprecated!  Use runDir instead! runDir set to eclipse/assets/..
 :apiClasses UP-TO-DATE
 :sourceMainJava
 :compileJavawarning: [options] bootstrap class path not set in conjunction with -source 1.6
-Note: A:\Projects\Forge\SuperCool\build\sources\java\io\github\rypofalem\supercool\SuperEggExplosion.java uses unchecked or unsafe operations.
+Note: Some input files use unchecked or unsafe operations.
 Note: Recompile with -Xlint:unchecked for details.
 1 warning
 
@@ -34,4 +34,4 @@ Note: Recompile with -Xlint:unchecked for details.
 
 BUILD SUCCESSFUL
 
-Total time: 25.465 secs
+Total time: 7.902 secs

@@ -7,14 +7,15 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.IIcon;
+import net.minecraft.world.Explosion;
 import net.minecraft.world.World;
 
 
 
 public class SuperItem extends Item {
 	@SideOnly(Side.CLIENT) protected IIcon itemIcon;
-	private EntitySuperEgg lastEgg;
-	int i= 0;
+	private EntitySuperEgg lastEgg =null;
+	private  World clientWorld;
 
 	public SuperItem() {
 		this.setCreativeTab(SuperCool.tabSuperCool);
@@ -26,10 +27,12 @@ public class SuperItem extends Item {
 	    if(player.capabilities.isCreativeMode||player.inventory.consumeInventoryItem(SuperCool.superEgg))
 	    {
 	        world.playSoundAtEntity(player, "random.bow", 0.5F, 0.4F / (itemRand.nextFloat() * 0.4F + 0.8F));
-	        lastEgg = new EntitySuperEgg(world, player);
 	        if (!world.isRemote)
 	        {
+	        	lastEgg = new EntitySuperEgg(world, player);
 	            world.spawnEntityInWorld(lastEgg);
+	        }else{
+	        	clientWorld = world;
 	        }
 	    }
 	        return held;
@@ -38,21 +41,8 @@ public class SuperItem extends Item {
 	@Override
 	public boolean onEntitySwing(EntityLivingBase living, ItemStack stack) {
 		super.onEntitySwing(living, stack);
-		if(living instanceof EntityPlayer && lastEgg !=null && !lastEgg.isDead ){
-			if(!living.worldObj.isRemote){ 
+		if(lastEgg != null){
 				lastEgg.explode();
-			}else{
-				if(!lastEgg.isClientDead){
-				double x = lastEgg.posX;
-		    	double y = lastEgg.posY;
-		    	double z = lastEgg.posZ;
-		        SuperEggExplosion explosion = new SuperEggExplosion(living.worldObj, lastEgg, x, y, z, lastEgg.explosionSize, lastEgg.explosionDamage, lastEgg.explosionDamageSize );
-		        explosion.isFlaming = false;
-		        explosion.isSmoking = true;
-		        explosion.doExplosionB(true);
-		        lastEgg.isClientDead = true;
-				}
-			}
 		}
 		return false;
 	}

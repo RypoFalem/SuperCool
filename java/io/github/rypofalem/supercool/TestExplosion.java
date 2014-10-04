@@ -12,7 +12,8 @@ import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.enchantment.EnchantmentProtection;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.monster.EntityMob;
+import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.item.EntityTNTPrimed;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.util.AxisAlignedBB;
@@ -23,8 +24,8 @@ import net.minecraft.world.ChunkPosition;
 import net.minecraft.world.Explosion;
 import net.minecraft.world.World;
 
-public class SuperEggExplosion extends Explosion {
-	
+public class TestExplosion extends Explosion {
+
 	float explosionDamage;
     /** A list of ChunkPositions of blocks affected by this explosion */
     public List affectedBlockPositions = new ArrayList();
@@ -35,15 +36,15 @@ public class SuperEggExplosion extends Explosion {
     private World worldObj;
 	private float explosionDamageSize;
 	
-	SuperEggExplosion(World worldObj, Entity exploder, double explosionX, double explosionY, double explosionZ, float explosionSize, float explosionDamage, float explosionDamageSize){
+	TestExplosion(World worldObj, Entity exploder, double explosionX, double explosionY, double explosionZ, float explosionSize){
 		super(worldObj, exploder, explosionX, explosionY, explosionZ, explosionSize);
-		this.explosionDamage = explosionDamage;
-		this.explosionDamageSize = explosionDamageSize;
 		this.worldObj = worldObj;
 	}
 	
-	@Override
-	public void doExplosionA()
+	 /**
+     * Does the first part of the explosion (destroy blocks)
+     */
+    public void doExplosionA()
     {
         float f = this.explosionSize;
         HashSet hashset = new HashSet();
@@ -80,6 +81,7 @@ public class SuperEggExplosion extends Explosion {
                             int k1 = MathHelper.floor_double(d6);
                             int l1 = MathHelper.floor_double(d7);
                             Block block = this.worldObj.getBlock(j1, k1, l1);
+
                             if (block.getMaterial() != Material.air)
                             {
                                 float f3 = this.exploder != null ? this.exploder.func_145772_a(this, this.worldObj, j1, k1, l1, block) : block.getExplosionResistance(this.exploder, worldObj, j1, k1, l1, explosionX, explosionY, explosionZ);
@@ -102,9 +104,9 @@ public class SuperEggExplosion extends Explosion {
 
         this.affectedBlockPositions.addAll(hashset);
         this.explosionSize *= 2.0F;
-        i = MathHelper.floor_double(this.explosionX - (double)this.explosionDamageSize - 1.0D);
-        j = MathHelper.floor_double(this.explosionX + (double)this.explosionDamageSize + 1.0D);
-        k = MathHelper.floor_double(this.explosionY - (double)this.explosionDamageSize - 1.0D);
+        i = MathHelper.floor_double(this.explosionX - (double)this.explosionSize - 1.0D);
+        j = MathHelper.floor_double(this.explosionX + (double)this.explosionSize + 1.0D);
+        k = MathHelper.floor_double(this.explosionY - (double)this.explosionSize - 1.0D);
         int i2 = MathHelper.floor_double(this.explosionY + (double)this.explosionSize + 1.0D);
         int l = MathHelper.floor_double(this.explosionZ - (double)this.explosionSize - 1.0D);
         int j2 = MathHelper.floor_double(this.explosionZ + (double)this.explosionSize + 1.0D);
@@ -114,7 +116,7 @@ public class SuperEggExplosion extends Explosion {
         for (int i1 = 0; i1 < list.size(); ++i1)
         {
             Entity entity = (Entity)list.get(i1);
-            double d4 = entity.getDistance(this.explosionX, this.explosionY, this.explosionZ) / (double)this.explosionDamageSize;
+            double d4 = entity.getDistance(this.explosionX, this.explosionY, this.explosionZ) / (double)this.explosionSize;
 
             if (d4 <= 1.0D)
             {
@@ -129,8 +131,8 @@ public class SuperEggExplosion extends Explosion {
                     d6 /= d9;
                     d7 /= d9;
                     double d10 = (double)this.worldObj.getBlockDensity(vec3, entity.boundingBox);
-                    double d11 = (1.0D - d4)* d10;
-                    entity.attackEntityFrom(DamageSource.setExplosionSource(this), (float)((int) ((Math.sqrt(d11) * (double)this.explosionDamage))));
+                    double d11 = (1.0D - d4) * d10;
+                    entity.attackEntityFrom(DamageSource.setExplosionSource(this), (float)((int)((d11 * d11 + d11) / 2.0D * 8.0D * (double)this.explosionSize + 1.0D)));
                     double d8 = EnchantmentProtection.func_92092_a(entity, d11);
                     entity.motionX += d5 * d8;
                     entity.motionY += d6 * d8;
@@ -146,18 +148,14 @@ public class SuperEggExplosion extends Explosion {
 
         this.explosionSize = f;
     }
-	
-	/**
+
+    /**
      * Does the second part of the explosion (sound, particles, drop spawn)
      */
-	@Override
     public void doExplosionB(boolean p_77279_1_)
     {
         this.worldObj.playSoundEffect(this.explosionX, this.explosionY, this.explosionZ, "random.explode", 4.0F, (1.0F + (this.worldObj.rand.nextFloat() - this.worldObj.rand.nextFloat()) * 0.2F) * 0.7F);
-        String side = "worldobj is null";
-        if(worldObj != null)
-         side = worldObj.isRemote ? "Client": "Server";
-        System.out.println("explosionB at " + explosionX + " "+ explosionY+ " "+explosionZ + " on " + side);
+
         if (this.explosionSize >= 2.0F && this.isSmoking)
         {
             this.worldObj.spawnParticle("hugeexplosion", this.explosionX, this.explosionY, this.explosionZ, 1.0D, 0.0D, 0.0D);
@@ -238,6 +236,18 @@ public class SuperEggExplosion extends Explosion {
                 }
             }
         }
-   }
+    }
 
+    public Map func_77277_b()
+    {
+        return this.field_77288_k;
+    }
+
+    /**
+     * Returns either the entity that placed the explosive block, the entity that caused the explosion or null.
+     */
+    public EntityLivingBase getExplosivePlacedBy()
+    {
+        return this.exploder == null ? null : (this.exploder instanceof EntityTNTPrimed ? ((EntityTNTPrimed)this.exploder).getTntPlacedBy() : (this.exploder instanceof EntityLivingBase ? (EntityLivingBase)this.exploder : null));
+    }
 }
